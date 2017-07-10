@@ -1,0 +1,14 @@
+document.writeln("<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Transitional//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\'>");
+document.writeln("<html xmlns=\'http://www.w3.org/1999/xhtml\' xml:lang=\'en\' lang=\'en\' > ");
+document.writeln("<head><title>愚仁杰的GitHub博客</title>");
+document.writeln(" <meta http-equiv=\'Content-type\' content=\'text/html; charset=utf-8\' />");
+document.writeln("</head>");
+document.writeln("");
+document.writeln("<body>");
+document.writeln("<div id=\'footer\'>");
+document.writeln(" <span><a href=\'#info\' >Home  </a></span> &bull;");
+document.writeln(" <span>Copyright &copy; 2017 Jack Yu</span>");
+document.writeln("</div>");
+document.writeln("</body>");
+document.writeln("</html>");
+document.writeln("");

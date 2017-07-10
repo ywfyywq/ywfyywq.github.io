@@ -5,7 +5,8 @@
  <link rel="icon"          href="img/yurenjie.ico" type="image/x-icon" />
  <link rel="shortcut icon" href="img/yurenjie.ico" type="image/x-icon" />
  
- <link rel="stylesheet" href="css/bootstrap.min.css" media="all"    type="text/css" >
+ <link rel="stylesheet" href="css/bootstrap.css">
+ <link rel="stylesheet" href="css/bootstrap-responsive.css">
  
  <link rel="stylesheet" href="css/header.css"     media="all"    type="text/css" />
  <link rel="stylesheet" href="css/footer.css"     media="all"    type="text/css" />
@@ -14,6 +15,9 @@
  <link rel="stylesheet" href="css/index.css"     media="all"    type="text/css" />
  <link rel="stylesheet" href="css/print.css"     media="print"    type="text/css" />
  
+ <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+ <script src="js/bootstrap.min.js"></script>
+	
  <!--[if lte IE 6]>
  <link rel="stylesheet" href="site_ie6.css" media="all"    type="text/css" />
  <link rel="stylesheet" href="ie6.css"         media="all"    type="text/css" />
@@ -25,17 +29,30 @@
  <script type="text/javascript" src="js/header.js"></script>
   
  <ul class="nav nav-tabs">
-  <li class="active"><a href="index.html">Home</a></li>
-  <li><a href="index_blogs.html">博客分类</a></li>
+  <li><a href="index.html">Home</a></li>
+  <li class="active"><a href="#">博客分类</a></li>
 </ul>
 <div id="content">
-<span class="label label-success label-title">最近更新：</span>
-<br>
-<ul>
-	<li><a href="#">哈利波特的秘密</a></li>
-</ul>
+	<div class="panel-group" id="accordion">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title" id="designpattern">
+					<a data-toggle="collapse" data-parent="#accordion" 
+					href="#collapseOne">
+					设计模式
+					</a>
+				</h4>
+			</div>
+			<div id="collapseOne" class="panel-collapse collapse">
+				<div class="panel-body">
+					<ul>
+						<li><a href="./articles/designpattern/introduction.html">设计模式简介</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
-
 <script type="text/javascript" src="js/footer.js"></script>
 
 </body>
