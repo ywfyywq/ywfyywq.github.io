@@ -2,7 +2,7 @@
 #headimage      { position:relative; width:180px; height:180px; overflow:hidden; background-color:#80FFFF; float:left;}
 
 #headimage span { position:absolute; width:180px; height:180px; left:0; top:0; 
-           background:url("../img/yurenjie.jpg") no-repeat; }
+           background:url("../img/yurenjie.png") no-repeat; }
 		   
 #info { padding: 20px; margin-bottom:10px; background-color:white; width:auto; height:200px;}
 
