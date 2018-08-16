@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" > 
+<head><title>愚仁杰的GitHub博客</title>
+ <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+ <link rel="icon"          href="../../img/yurenjie.ico" type="image/x-icon" />
+ <link rel="shortcut icon" href="../../img/yurenjie.ico" type="image/x-icon" />
+ <link rel="stylesheet" href="../../css/bootstrap.min.css" media="all"    type="text/css" >
+ 
+ <link rel="stylesheet" href="../../css/header.css"     media="all"    type="text/css" />
+ <link rel="stylesheet" href="../../css/footer.css"     media="all"    type="text/css" />
+ 
+ <link rel="stylesheet" href="../../css/site.css"     media="all"    type="text/css" />
+ <link rel="stylesheet" href="../../css/index.css"     media="all"    type="text/css" />
+ <link rel="stylesheet" href="../../css/print.css"     media="print"    type="text/css" />
+ <link rel="stylesheet" href="../../css/articles.css"     media="all"    type="text/css" />
+ <link rel="stylesheet" href="../../css/monokai-sublime.css"    media="all"    type="text/css" >
+ <script src="../../js/highlight.pack.js"></script>
+ <script>hljs.initHighlightingOnLoad();</script>
+ <!--[if lte IE 6]>
+ <link rel="stylesheet" href="site_ie6.css" media="all"    type="text/css" />
+ <link rel="stylesheet" href="ie6.css"         media="all"    type="text/css" />
+ <![endif]-->
+</head>
+
+<body class="blog_body">
+<div id="main">
+ <script type="text/javascript" src="../../js/header.js"></script>
+ 
+  <div id="postheader">
+    <p class="breadcrumbs"><a href="../../index.html">Home</a> » <a href="../../index_blogs.html#designpattern">设计模式</a> 
+       » 工厂方法模式</p>
+    <p class="sequential"><a href="../../index_blogs.html#designpattern">« Previous</a> | <a href="#">Next »</a></p>
+  </div>
+ <div id="content">
+ <blockquote>
+	<p><b>简单工厂</b>其实不是一种设计模式，反而比较像是一种编程习惯，但其经常被误认为是"工厂模式"。</p>
+ </blockquote>
+ <div class="images">
+	<img src="img/SimpleFactory.png"  alt="简单工厂模式"/>
+ </div>
+ <br/>
+ <pre><code class="language-java hljs">public abstract class Product {
+    public abstract String getName();
+
+    public void prepare(){
+        System.out.println("Preparing " + getName());
+    }
+
+    public void box(){
+        System.out.println("Place product in official product box");
+    }
+}</code>
+<code class="language-java hljs">public class ProductA extends Product {
+    @Override
+    public String getName() {
+        return "ProductA";
+    }
+}</code>
+<code class="language-java hljs">public class ProductB extends Product {
+    @Override
+    public String getName() {
+        return "ProductB";
+    }
+}</code>
+<code class="language-java hljs">public class ProductC extends Product {
+    @Override
+    public String getName() {
+        return "ProductC";
+    }
+}</code></pre>
+<pre><code class="language-java hljs">public enum EProductName {
+	A,
+	B,
+	C
+}</code>
+<code class="language-java hljs">public class SimpleFactory {
+	public AbstractProduct createProduct(EProductName name) {
+		if(name == EProductName.A) {
+			return new ProductA();
+		} else if(name == EProductName.B) {
+			return new ProductB();
+		} else if(name == EProductName.C) {
+			return new ProductC();
+		}
+
+		return null;
+	}
+}</code>
+<code class="language-java hljs">public class ProductStore {
+    SimpleFactory factory;
+    public ProductStore(SimpleFactory factory) {
+        this.factory = factory;
+    }
+
+    public Product orderProduct(EProductName name) {
+        Product product = factory.createProduct(name);
+        product.prepare();
+        product.box();
+
+        return product;
+    }
+}</code></pre>
+<pre><code class="language-java hljs">public class Client {
+    public static void main(String[] args) {
+        SimpleFactory sf = new SimpleFactory();
+        ProductStore store = new ProductStore(sf);
+        store.orderProduct(EProductName.A);
+        store.orderProduct(EProductName.B);
+        store.orderProduct(EProductName.C);
+        
+        /*  Output:
+            Preparing ProductA
+            Place product in official product box
+            Preparing ProductB
+            Place product in official product box
+            Preparing ProductC
+            Place product in official product box
+         */
+    }
+}</code></pre>
+<br/>
+<br/>
+<blockquote>
+	<p><b>工厂方法模式</b>定义了一个创建对象的接口，但由子类决定要实例化的类是哪一个。工厂方法让类把实例化推迟到子类。</p>
+ </blockquote>
+ <div class="images">
+	<img src="img/Factory.png"  alt="工厂方法模式"/>
+ </div>
+ <br/>
+ <pre><code class="language-java hljs">public abstract class Product {
+    public abstract String getName();
+
+    public void prepare(){
+        System.out.println("Preparing " + getName());
+    }
+
+    public void box(){
+        System.out.println("Place product in official product box");
+    }
+}</code>
+<code class="language-java hljs">public class BlackProductA extends Product {
+    @Override
+    public String getName() {
+        return "BlackProductA";
+    }
+
+    @Override
+    public void box() {
+        System.out.println("Place product in black box");
+    }
+}</code>
+<code class="language-java hljs">public class BlackProductB extends Product {
+    @Override
+    public String getName() {
+        return "BlackProductB";
+    }
+
+    public void box() {
+        System.out.println("Place product in black box");
+    }
+}</code>
+<code class="language-java hljs">public class RedProductA extends Product {
+    @Override
+    public String getName() {
+        return "RedProductA";
+    }
+
+    public void box() {
+        System.out.println("Place product in red box");
+    }
+}</code>
+<code class="language-java hljs">public class RedProductB extends Product {
+    @Override
+    public String getName() {
+        return "RedProductB";
+    }
+
+    public void box() {
+        System.out.println("Place product in red box");
+    }
+}</code></pre>
+<pre><code class="language-java hljs">public enum EProductName {
+	A,
+	B
+}</code>
+<code class="language-java hljs">public abstract class ProductStore {
+
+    public Product orderProduct(EProductName name) {
+        Product product = createProduct(name);
+        product.prepare();
+        product.box();
+
+        return product;
+    }
+
+    protected abstract Product createProduct(EProductName name);
+}</code>
+<code class="language-java hljs">public class BlackProductStore extends ProductStore{
+    @Override
+    protected Product createProduct(EProductName name) {
+        if(name == EProductName.A) {
+            return new BlackProductA();
+        } else if(name == EProductName.B) {
+            return new BlackProductB();
+        }
+        return null;
+    }
+}</code>
+<code class="language-java hljs">public class RedProductStore extends ProductStore{
+    @Override
+    protected Product createProduct(EProductName name) {
+        if(name == EProductName.A) {
+            return new RedProductA();
+        } else if(name == EProductName.B) {
+            return new RedProductB();
+        }
+        return null;
+    }
+}</code></pre>
+<pre><code class="language-java hljs">public class Client {
+    public static void main(String[] args) {
+        ProductStore store = new BlackProductStore();
+        store.orderProduct(EProductName.B);
+
+        store = new RedProductStore();
+        store.orderProduct(EProductName.B);
+
+        /*  Output:
+            Preparing BlackProductB
+            Place product in black box
+            Preparing RedProductB
+            Place product in red box
+         */
+    }
+}</code></pre>
+<br/>
+<blockquote>
+	<p><b>抽象工厂模式</b>提供一个接口，用于创建相关或依赖对象的家族，而不需要明确指定具体类。</p>
+ </blockquote>
+ <div class="images">
+	<img src="img/AbstractFactory.png"  alt="工厂方法模式"/>
+ </div>
+ </div>
+<script type="text/javascript" src="../../js/footer.js"></script>
+
+</body>
+</html>

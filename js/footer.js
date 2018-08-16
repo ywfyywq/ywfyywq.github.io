@@ -7,7 +7,7 @@ document.writeln("");
 document.writeln("<body>");
 document.writeln("<div id=\'footer\'>");
 document.writeln(" <span><a href=\'#info\' >Home  </a></span> &bull;");
-document.writeln(" <span>Copyright &copy; 2017 Jack Yu</span>");
+document.writeln(" <span>Copyright &copy; 2017-2018 Jack Yu</span>");
 document.writeln("</div>");
 document.writeln("</body>");
 document.writeln("</html>");
