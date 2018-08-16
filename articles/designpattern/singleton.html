@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" > 
+<head><title>愚仁杰的GitHub博客</title>
+ <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+ <link rel="icon"          href="../../img/yurenjie.ico" type="image/x-icon" />
+ <link rel="shortcut icon" href="../../img/yurenjie.ico" type="image/x-icon" />
+ <link rel="stylesheet" href="../../css/bootstrap.min.css" media="all"    type="text/css" >
+ 
+ <link rel="stylesheet" href="../../css/header.css"     media="all"    type="text/css" />
+ <link rel="stylesheet" href="../../css/footer.css"     media="all"    type="text/css" />
+ 
+ <link rel="stylesheet" href="../../css/site.css"     media="all"    type="text/css" />
+ <link rel="stylesheet" href="../../css/index.css"     media="all"    type="text/css" />
+ <link rel="stylesheet" href="../../css/print.css"     media="print"    type="text/css" />
+ <link rel="stylesheet" href="../../css/articles.css"     media="all"    type="text/css" />
+ <link rel="stylesheet" href="../../css/monokai-sublime.css"    media="all"    type="text/css" >
+ <script src="../../js/highlight.pack.js"></script>
+ <script>hljs.initHighlightingOnLoad();</script>
+ <!--[if lte IE 6]>
+ <link rel="stylesheet" href="site_ie6.css" media="all"    type="text/css" />
+ <link rel="stylesheet" href="ie6.css"         media="all"    type="text/css" />
+ <![endif]-->
+</head>
+
+<body class="blog_body">
+<div id="main">
+ <script type="text/javascript" src="../../js/header.js"></script>
+ 
+  <div id="postheader">
+    <p class="breadcrumbs"><a href="../../index.html">Home</a> » <a href="../../index_blogs.html#designpattern">设计模式</a> 
+       » 单例模式</p>
+    <p class="sequential"><a href="../../index_blogs.html#designpattern">« Previous</a> | <a href="#">Next »</a></p>
+  </div>
+ <div id="content">
+ <blockquote>
+	<p><b>单例模式</b>确保一个类只有一个实例，并提供一个全局访问点。</p>
+ </blockquote>
+ <pre><code class="language-java hljs">public class SimpleSingleton {
+    private static SimpleSingleton instance;
+    private SimpleSingleton(){}
+
+    public static SimpleSingleton getInstance() {
+        // 未加同步，多线程环境下不能正常工作
+        if(instance == null) {
+            instance = new SimpleSingleton();
+        }
+        return instance;
+    }
+}</code></pre>
+<pre><code class="language-java hljs">public class Singleton {
+    // 类加载时就初始化,浪费内存,大对象时不适用
+    private static Singleton instance = new Singleton();
+    private Singleton(){}
+
+    public static Singleton getInstance() {
+        return instance;
+    }
+}</code></pre>
+<pre><code class="language-java hljs">public class SynchronizedSingleton {
+    private static SynchronizedSingleton instance;
+    private SynchronizedSingleton(){}
+
+    // 对方法进行同步,容易造成性能瓶颈
+    public static synchronized SynchronizedSingleton getInstance() {
+        if(instance == null) {
+            instance = new SynchronizedSingleton();
+        }
+        return instance;
+    }
+}</code></pre>
+<pre><code class="language-java hljs">public class DclSingleton {
+    private volatile static DclSingleton instance;
+    private DclSingleton(){}
+
+    public static synchronized DclSingleton getInstance() {
+        // 双重校验,实现较复杂
+        if(instance == null) {
+            synchronized (DclSingleton.class) {
+                if(instance == null) {
+                    instance = new DclSingleton();
+                }
+            }
+        }
+        return instance;
+    }
+}</code></pre>
+<pre><code class="language-java hljs">public class HolderSingleton {
+    // 利用classloader的加载特性,类加载的时候不用初始化,只有SingletonHolder被引用时才会初始化,起到了延迟加载的作用
+    private static class SingletonHolder {
+        private static final HolderSingleton INSTANCE = new HolderSingleton();
+    }
+    private HolderSingleton (){}
+    public static final HolderSingleton getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+}</code></pre>
+<pre><code class="language-java hljs">public enum EnumSingleton {
+    // 利用枚举的特性确保只会产生一个实例,简单易用,推荐使用
+    INSTANCE;
+    public void method1(){}
+    public void method2(){}
+}</code></pre>
+ </div>
+<script type="text/javascript" src="../../js/footer.js"></script>
+
+</body>
+</html>
