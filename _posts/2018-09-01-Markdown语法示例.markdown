@@ -1,0 +1,252 @@
+---
+layout: post
+title: Markdown基本语法示例
+date: 2018-09-01
+comments: true 
+tags: 学习笔记
+---
+### 换行
+一行或者连续多行的空行被示为段落结束。
+（未加空行前，还属于同一段落，即使文本上看起来已经换行）
+
+
+（加入空行，上述段落已结束）
+
+
+### 标题
+Markdown支持两种形式的标题（标题加了博客样式，所以看起来显示不一样）
+
+第一种：（只支持一二级）
+
+示例：
+
+{% highlight md %}
+This is an H1
+=============
+
+This is an H2
+-------------
+{% endhighlight %}
+
+效果：
+
+This is an H1
+=============
+
+This is an H2
+-------------
+
+
+第二种：（只支持到六级）
+
+示例：
+
+{% highlight md %}
+# This is an H1
+
+## This is an H2
+
+### This is an H3
+
+### This is an H4
+
+##### This is an H5
+
+###### This is an H6
+{% endhighlight %}
+
+# This is an H1
+
+## This is an H2
+
+### This is an H3
+
+### This is an H4
+
+##### This is an H5
+
+###### This is an H6
+
+### 引用
+Markdown使用邮件风格，>字符来表示使用
+
+示例1：
+
+{% highlight md %}
+> This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
+> consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+> Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
+> 
+> Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse
+> id sem consectetuer libero luctus adipiscing.
+{% endhighlight %}
+
+效果：
+
+> This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
+> consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+> Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
+> 
+> Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse
+> id sem consectetuer libero luctus adipiscing.
+
+示例2（每行只放一个>号）：
+
+{% highlight md %}
+> This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
+consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
+
+> Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse
+id sem consectetuer libero luctus adipiscing.
+{% endhighlight %}
+
+效果：
+
+> This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
+consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
+
+> Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse
+id sem consectetuer libero luctus adipiscing.
+
+示例3（嵌套）：
+
+{% highlight md %}
+> This is the first level of quoting.
+>
+> > This is nested blockquote.
+>
+> Back to the first level.
+{% endhighlight %}
+
+效果：
+
+> This is the first level of quoting.
+>
+> > This is nested blockquote.
+>
+> Back to the first level.
+
+
+示例4（可以嵌入其它Markdown元素）：
+
+{% highlight md %}
+> ## This is a header.
+> 
+> 1.   This is the first list item.
+> 2.   This is the second list item.
+> 
+> Here's some example code:
+> 
+>     return shell_exec("echo $input | $markdown_script");
+{% endhighlight %}
+
+> ## This is a header.
+> 
+> 1.   This is the first list item.
+> 2.   This is the second list item.
+> 
+> Here's some example code:
+> 
+>     return shell_exec("echo $input | $markdown_script");
+
+### 列表
+
+无序列表：（三种符号均可）
+
+示例：
+
+{% highlight md %}
+*   Red1
+*   Green1
+*   Blue1
++   Red2
++   Green2
++   Blue2
+-   Red3
+-   Green3
+-   Blue3
+{% endhighlight %}
+
+
+效果：
+
+*   Red1
+*   Green1
+*   Blue1
++   Red2
++   Green2
++   Blue2
+-   Red3
+-   Green3
+-   Blue3
+
+有序列表：
+
+示例1：（数字按顺序）
+
+{% highlight md %}
+1. Bird
+2. McHale
+3. Parish
+{% endhighlight %}
+
+1. Bird
+2. McHale
+3. Parish
+
+示例2：（数字也可以不按顺序，Markdown会自动排序，数字按顺序只是为了一致性）
+{% highlight md %}
+1. Bird
+1. McHale
+1. Parish
+3. Bird
+2. McHale
+8. Parish
+{% endhighlight %}
+
+1. Bird
+1. McHale
+1. Parish
+3. Bird
+2. McHale
+8. Parish
+
+列表格式化：
+
+示例1：（使用缩进）
+
+{% highlight md %}
+*   Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+    Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi,
+    viverra nec, fringilla in, laoreet vitae, risus.
+*   Donec sit amet nisl. Aliquam semper ipsum sit amet velit.
+    Suspendisse id sem consectetuer libero luctus adipiscing.
+{% endhighlight %}
+
+效果：
+
+*   Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+    Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi,
+    viverra nec, fringilla in, laoreet vitae, risus.
+*   Donec sit amet nisl. Aliquam semper ipsum sit amet velit.
+    Suspendisse id sem consectetuer libero luctus adipiscing.
+
+	
+示例2：（偷懒）
+
+{% highlight md %}
+*   Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi,
+viverra nec, fringilla in, laoreet vitae, risus.
+*   Donec sit amet nisl. Aliquam semper ipsum sit amet velit.
+Suspendisse id sem consectetuer libero luctus adipiscing.
+{% endhighlight %}
+
+*   Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi,
+viverra nec, fringilla in, laoreet vitae, risus.
+*   Donec sit amet nisl. Aliquam semper ipsum sit amet velit.
+Suspendisse id sem consectetuer libero luctus adipiscing.
+

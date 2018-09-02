@@ -1,44 +1,97 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" > 
-<head><title>愚仁杰的GitHub博客</title>
- <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
- <link rel="icon"          href="img/yurenjie.ico" type="image/x-icon" />
- <link rel="shortcut icon" href="img/yurenjie.ico" type="image/x-icon" />
- 
- <link rel="stylesheet" href="css/bootstrap.min.css" media="all"    type="text/css" >
- 
- <link rel="stylesheet" href="css/header.css"     media="all"    type="text/css" />
- <link rel="stylesheet" href="css/footer.css"     media="all"    type="text/css" />
- 
- <link rel="stylesheet" href="css/site.css"     media="all"    type="text/css" />
- <link rel="stylesheet" href="css/index.css"     media="all"    type="text/css" />
- <link rel="stylesheet" href="css/print.css"     media="print"    type="text/css" />
- 
- <!--[if lte IE 6]>
- <link rel="stylesheet" href="site_ie6.css" media="all"    type="text/css" />
- <link rel="stylesheet" href="ie6.css"         media="all"    type="text/css" />
- <![endif]-->
-</head>
+---
+layout: default
+---
 
-<body class="blog_body">
-<div id="main">
- <script type="text/javascript" src="js/header.js"></script>
-  
- <ul class="nav nav-tabs">
-  <li class="active"><a href="index.html">Home</a></li>
-  <li><a href="index_blogs.html">博客分类</a></li>
-</ul>
-<div id="content">
-<span class="label label-success label-title">最近更新：</span>
-<br>
-<ul>
-	<li><a href="./articles/designpattern/singleton.html">单例模式</a></li>
-	<li><a href="./articles/designpattern/factory.html">工厂方法模式</a></li>
-	<li><a href="./articles/designpattern/introduction.html">设计模式简介</a></li>
-</ul>
+
+<div class="main-post-list hidden">
+
+  <ol class="post-list">
+    {% for post in paginator.posts %}
+    <li>
+      <h1 class="post-list__post-title post-title"><a href="{{ post.url }}" title="访问 {{ post.title }}">{{ post.title }}</a></h1>
+      <p class="excerpt">{{ post.content | strip_html | strip_newlines | truncate: 250 }}&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="{{post.date | date: date_to_xmlschema}}" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          {{ post.date | date: "%F"}}</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">{{ post.tags }}</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href={{ post.url }}>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    {% endfor %}
+  </ol>
+
+  {% include pagination.html %}
+
 </div>
 
-<script type="text/javascript" src="js/footer.js"></script>
+<!--<script src="js/canvas-nest.min.js"></script>-->
+
+
+ 
+<link href="css/top.css" rel="stylesheet" type="text/css" />
+<script src="js/jquery.js?v=1.83.min" type="text/javascript"></script>
+<script src="js/top.js"></script>
+<div style="display: none;" id="rocket-to-top">
+<div style="opacity:0;display: block;" class="level-2"></div>
+<div class="level-3"></div>
+</div>
+
+
+
+
+
+<!--baidu-->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?02cdc1cf6472c8bafdf89d5378ba5104";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<body style="height:1000px;">
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124922688-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124922688-1');
+</script>
+
+
+
+<!--小人只在首页显示 start*
+<div id="spig" class="spig">
+    <div id="message">正在加载中……</div>
+    <div id="mumu" class="mumu"></div>
+</div>-->
+<!--小人end*
 
 </body>
-</html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="js/jquery.xiaoren.js"></script>
+<script type="text/javascript" src="js/spig.js"></script>
+<link rel="stylesheet" href="css/xiaoren.css" type="text/css"/>
+<script type="text/javascript">
+var isindex = true;
+var visitor = true;
+</script>-->
+
+
+
