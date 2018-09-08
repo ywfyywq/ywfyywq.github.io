@@ -504,16 +504,17 @@ Use the `printf()` function.
 示例：
 
 {% highlight md %}
-![支付宝捐赠](/dsimage/alipayimg.jpg)
-![微信捐赠][wechat]
-[wechat]: /dsimage/weipayimg.jpg "Optional title attribute"
+
+![樱木花道][sakura]
+
+[sakura]: https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536999789&di=ceaa35724f93fb5d1be8fbb68f7537de&imgtype=jpg&er=1&src=http%3A%2F%2Fimg1.touxiang.cn%2Fuploads%2F20140404%2F04-061134_426.jpg "因为我是天才"
 {% endhighlight %}
 
 效果：
 
-![支付宝捐赠](/dsimage/alipayimg.jpg)
-![微信捐赠][wechat]
-[wechat]: /dsimage/weipayimg.jpg "Optional title attribute"
+![樱木花道][sakura]
+
+[sakura]: https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536999789&di=ceaa35724f93fb5d1be8fbb68f7537de&imgtype=jpg&er=1&src=http%3A%2F%2Fimg1.touxiang.cn%2Fuploads%2F20140404%2F04-061134_426.jpg "因为我是天才"
 
 ### 反斜杠转义
 
