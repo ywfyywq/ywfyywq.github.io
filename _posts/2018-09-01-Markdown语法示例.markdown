@@ -6,6 +6,19 @@ comments: true
 tags: 学习笔记
 ---
 ### 换行
+
+示例：
+
+{% highlight md %}
+一行或者连续多行的空行被示为段落结束。
+（未加空行前，还属于同一段落，即使文本上看起来已经换行）
+
+
+（加入空行，上述段落已结束）
+{% endhighlight %}
+
+效果：
+
 一行或者连续多行的空行被示为段落结束。
 （未加空行前，还属于同一段落，即使文本上看起来已经换行）
 
@@ -48,7 +61,7 @@ This is an H2
 
 ### This is an H3
 
-### This is an H4
+#### This is an H4
 
 ##### This is an H5
 
@@ -61,7 +74,7 @@ This is an H2
 
 ### This is an H3
 
-### This is an H4
+#### This is an H4
 
 ##### This is an H5
 
@@ -234,7 +247,7 @@ id sem consectetuer libero luctus adipiscing.
     Suspendisse id sem consectetuer libero luctus adipiscing.
 
 	
-示例2：（偷懒）
+示例2：（也可以偷懒不缩进，效果一样）
 
 {% highlight md %}
 *   Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
@@ -250,3 +263,310 @@ viverra nec, fringilla in, laoreet vitae, risus.
 *   Donec sit amet nisl. Aliquam semper ipsum sit amet velit.
 Suspendisse id sem consectetuer libero luctus adipiscing.
 
+
+示例3：（列表项中有多个段落，每段首行需要缩进，其它行可缩可不缩）
+
+{% highlight md %}
+1.  This is a list item with two paragraphs. Lorem ipsum dolor
+    sit amet, consectetuer adipiscing elit. Aliquam hendrerit
+    mi posuere lectus.
+
+    Vestibulum enim wisi, viverra nec, fringilla in, laoreet
+vitae, risus. Donec sit amet nisl. Aliquam semper ipsum
+sit amet velit.
+
+2.  Suspendisse id sem consectetuer libero luctus adipiscing.
+{% endhighlight %}
+
+效果：
+
+1.  This is a list item with two paragraphs. Lorem ipsum dolor
+    sit amet, consectetuer adipiscing elit. Aliquam hendrerit
+    mi posuere lectus.
+
+    Vestibulum enim wisi, viverra nec, fringilla in, laoreet
+vitae, risus. Donec sit amet nisl. Aliquam semper ipsum
+sit amet velit.
+
+2.  Suspendisse id sem consectetuer libero luctus adipiscing.
+
+
+示例4：（列表中有引用，需缩进）
+
+{% highlight md %}
+*   A list item with a blockquote:
+
+    > This is a blockquote
+    > inside a list item.
+{% endhighlight %}
+
+效果：
+
+*   A list item with a blockquote:
+
+    > This is a blockquote
+    > inside a list item.
+
+	
+示例5：（列表中有代码，需缩进8个空格）
+
+{% highlight md %}
+*   A list item with a code block:
+
+		return shell_exec("echo $input | $markdown_script");
+{% endhighlight %}
+	
+效果：
+
+*   A list item with a code block:
+
+		return shell_exec("echo $input | $markdown_script");
+		
+示例6：（段落中有数字，防止不小心变成列表）
+
+{% highlight md %}
+1986\. What a great season.
+{% endhighlight %}
+
+效果：
+
+1986\. What a great season.
+
+### 代码块
+任何四个（或超过四个）空格缩进的行都被当成是代码行
+
+示例：
+
+{% highlight md %}
+This is a normal paragraph:
+
+    This is a code block.
+{% endhighlight %}
+
+效果：
+
+This is a normal paragraph:
+
+    This is a code block.
+	
+### 水平分割线
+三个以上的连字符、星号或者下划线都会转换成分割线
+
+示例：
+
+{% highlight md %}
+* * *
+
+***
+
+*****
+
+- - -
+
+---------------------------------------
+{% endhighlight %}
+
+效果：
+
+* * *
+
+***
+
+*****
+
+- - -
+
+---------------------------------------
+
+### 链接
+
+示例1：
+
+{% highlight md %}
+This is [an example](http://www.baidu.com/ "Title") inline link.
+
+[This link](http://example.net/) has no title attribute.
+{% endhighlight %}
+
+效果：
+
+This is [an example](http://www.baidu.com/ "Title") inline link.
+
+[This link](http://example.net/) has no title attribute.
+
+示例2：（引用当前服务器的页面）
+
+{% highlight md %}
+See my [About](/about/) page for details.   
+{% endhighlight %}
+
+效果：
+
+See my [About](/about/) page for details.   
+
+示例3：（引用变量）
+
+{% highlight md %}
+This is [an example][id] reference-style link.
+
+[id]: http://www.baidu.com/  "Optional Title Here"
+{% endhighlight %}
+
+效果：
+
+This is [an example][id] reference-style link.
+
+[id]: http://www.baidu.com/  "Optional Title Here"
+
+示例4：（使用链接本身作为文本，简化）
+
+{% highlight md %}
+<http://www.baidu.com/>
+{% endhighlight %}
+
+效果：
+
+<http://www.baidu.com/>
+
+其它：
+
+* 下面三种写法是等价的
+	{% highlight md %}
+		[foo]: http://www.baidu.com/  "Optional Title Here"
+		[foo]: http://www.baidu.com/  'Optional Title Here'
+		[foo]: http://www.baidu.com/  (Optional Title Here)
+	{% endhighlight %}
+* 链接较长时，标题可以换行，使用空格缩进
+	{% highlight md %}
+		[id]: http://www.baidu.com/longish/path/to/resource/here
+			"Optional Title Here"
+	{% endhighlight %}
+* 链接ID不区分大小写
+* 链接ID可以省略，省略时ID与链接文本本身相同
+	{% highlight md %}
+		[Google][]
+		[Google]: http://google.com/
+	{% endhighlight %}
+* 链接定义可以放在文档的任意位置，比如可以放在文章最后
+
+### 强调
+
+示例：
+
+{% highlight md %}
+*single asterisks*
+
+_single underscores_
+
+**double asterisks**
+
+__double underscores__
+
+un*frigging*believable
+{% endhighlight %}
+
+效果：
+
+*single asterisks*
+
+_single underscores_
+
+**double asterisks**
+
+__double underscores__
+
+un*frigging*believable
+
+### 内联代码
+
+示例1：
+
+{% highlight md %}
+Use the `printf()` function.
+{% endhighlight %}
+
+效果：
+
+Use the `printf()` function.
+
+示例2：（文本中包含反引号本身）
+
+{% highlight md %}
+``There is a literal backtick (`) here.``
+{% endhighlight %}
+
+效果：
+
+``There is a literal backtick (`) here.``
+
+### 图片
+
+示例：
+
+{% highlight md %}
+![支付宝捐赠](/dsimage/alipayimg.jpg)
+![微信捐赠][wechat]
+[wechat]: /dsimage/weipayimg.jpg "Optional title attribute"
+{% endhighlight %}
+
+效果：
+
+![支付宝捐赠](/dsimage/alipayimg.jpg)
+![微信捐赠][wechat]
+[wechat]: /dsimage/weipayimg.jpg "Optional title attribute"
+
+### 反斜杠转义
+
+示例：
+
+{% highlight md %}
+\\   backslash
+
+\`   backtick
+
+\*   asterisk
+
+\_   underscore
+
+\{\}  curly braces
+
+\[\]  square brackets
+
+\(\)  parentheses
+
+\#   hash mark
+
+\+   plus sign
+
+\-   minus sign (hyphen)
+
+\.   dot
+
+\!   exclamation mark
+{% endhighlight %}
+
+效果：
+
+\\   backslash
+
+\`   backtick
+
+\*   asterisk
+
+\_   underscore
+
+\{\}  curly braces
+
+\[\]  square brackets
+
+\(\)  parentheses
+
+\#   hash mark
+
+\+   plus sign
+
+\-   minus sign (hyphen)
+
+\.   dot
+
+\!   exclamation mark
