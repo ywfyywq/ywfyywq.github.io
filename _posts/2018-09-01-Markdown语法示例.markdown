@@ -4,6 +4,7 @@ title: Markdown基本语法示例
 date: 2018-09-01
 comments: true 
 tags: 学习笔记 Markdown
+summary: 本文主要介绍Markdown的基本语法，如换行、标题、代码块、列表、链接、图片等。
 ---
 ### 换行
 
