@@ -163,6 +163,64 @@ summary: 本章内容涵盖你在使用 Git 完成各种工作中将要使用的
 	# ignore all .pdf files in the doc/ directory
 	doc/**/*.pdf
 
+* **查看已暂存和未暂存的修改**
 
+git diff 将通过文件补丁的格式显示具体哪些行发生了改变, 此命令比较的是工作目录中当前文件和暂存区域快照之间的差异， 也就是修改之后还没有暂存起来的变化内容。
+
+要查看尚未暂存的文件更新了哪些部分，不加参数直接输入 git diff：
+
+	$ git diff
+	diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+	index 8ebb991..643e24f 100644
+	--- a/CONTRIBUTING.md
+	+++ b/CONTRIBUTING.md
+	@@ -65,7 +65,8 @@ branch directly, things can get messy.
+	 Please include a nice description of your changes when you submit your PR;
+	 if we have to read the whole diff to figure out why you're contributing
+	 in the first place, you're less likely to get feedback and have your change
+	-merged in.
+	+merged in. Also, split your changes into comprehensive chunks if your patch is
+	+longer than a dozen lines.
+
+	 If you are starting to work on a particular area, feel free to submit a PR
+	 that highlights your work in progress (and note in the PR title that it's
+ 
+若要查看已暂存的将要添加到下次提交里的内容，可以用 git diff --cached 命令。（Git 1.6.1 及更高版本还允许使用 git diff --staged，效果是相同的，但更好记些。）
+
+	$ git diff --staged
+	diff --git a/README b/README
+	new file mode 100644
+	index 0000000..03902a1
+	--- /dev/null
+	+++ b/README
+	@@ -0,0 +1 @@
+	+My Project
+	
+Note:
+
+	Git Diff 的插件版本
+	
+	在本书中，我们使用 git diff 来分析文件差异。 但是，如果你喜欢通过图形化的方式或其它格式输出方式的话，可以使用 git difftool 命令来用 Araxis ，emerge 或 vimdiff 等软件输出 diff 分析结果。 使用 git difftool --tool-help 命令来看你的系统支持哪些 Git Diff 插件。
+
+* **提交更新**
+
+每次准备提交前，先用 git status 看下，是不是都已暂存起来了， 然后再运行提交命令 git commit：
+
+这种方式会启动文本编辑器以便输入本次提交的说明。 (默认会启用 shell 的环境变量 $EDITOR 所指定的软件，一般都是 vim 或 emacs。当然也可以按照 起步 介绍的方式，使用 git config --global core.editor 命令设定你喜欢的编辑软件。）
+
+编辑器会显示类似下面的文本信息（本例选用 Vim 的屏显方式展示）：
+
+	# Please enter the commit message for your changes. Lines starting
+	# with '#' will be ignored, and an empty message aborts the commit.
+	# On branch master
+	# Changes to be committed:
+	#	new file:   README
+	#	modified:   CONTRIBUTING.md
+	#
+	~
+	~
+	~
+	".git/COMMIT_EDITMSG" 9L, 283C
 	
 [lifecycle]: /images/blog/ProGit/2/lifecycle.jpg
+
