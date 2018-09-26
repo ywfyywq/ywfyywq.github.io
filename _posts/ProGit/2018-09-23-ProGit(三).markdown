@@ -489,6 +489,79 @@ git fetch 更新你的远程仓库引用:
 	 - [deleted]         serverfix
 
 基本上这个命令做的只是从服务器上移除这个指针。 Git 服务器通常会保留数据一段时间直到垃圾回收运行，所以如果不小心删除掉了，通常是很容易恢复的。
+
+### 变基
+
+将 C4 中的修改变基到 C3 上:
+
+	$ git checkout experiment
+	$ git rebase master
+	First, rewinding head to replay your work on top of it...
+	Applying: added staged command
+
+![将 C4 中的修改变基到 C3 上][basic-rebase-3]
+
+它的原理是首先找到这两个分支（即当前分支 experiment、变基操作的目标基底分支 master）的最近共同祖先 C2，然后对比当前分支相对于该祖先的历次提交，提取相应的修改并存为临时文件，然后将当前分支指向目标基底 C3, 最后以此将之前另存为临时文件的修改依序应用。
+
+现在回到 master 分支，进行一次快进合并。
+
+	$ git checkout master
+	$ git merge experiment
+
+master 分支的快进合并:
+
+![master 分支的快进合并][basic-rebase-4]
+
+一般我们这样做的目的是为了确保在向远程分支推送时能保持提交历史的整洁——例如向某个其他人维护的项目贡献代码时。 在这种情况下，你首先在自己的分支里进行开发，当开发完成时你需要先将你的代码变基到 origin/master 上，然后再向主项目提交修改。
+
+* **更有趣的变基例子**
+
+从一个特性分支里再分出一个特性分支的提交历史:
+
+![从一个特性分支里再分出一个特性分支的提交历史][interesting-rebase-1]
+
+假设你希望将 client 中的修改合并到主分支并发布，但暂时并不想合并 server 中的修改，因为它们还需要经过更全面的测试。 这时，你就可以使用 git rebase 命令的 --onto 选项，选中在 client 分支里但不在 server 分支里的修改（即 C8 和 C9），将它们在 master 分支上重放：
+
+	$ git rebase --onto master server client
+	
+以上命令的意思是：“取出 client 分支，找出处于 client 分支和 server 分支的共同祖先之后的修改，然后把它们在 master 分支上重放一遍”。 这理解起来有一点复杂，不过效果非常酷。
+
+截取特性分支上的另一个特性分支，然后变基到其他分支:
+
+![变基到其他分支][interesting-rebase-2]
+
+现在可以快进合并 master 分支了。
+
+	$ git checkout master
+	$ git merge client
+	
+快进合并 master 分支，使之包含来自 client 分支的修改:
+
+![快进合并 master 分支][interesting-rebase-3]
+
+接下来你决定将 server 分支中的修改也整合进来。 使用 git rebase [basebranch] [topicbranch] 命令可以直接将特性分支（即本例中的 server）变基到目标分支（即 master）上。这样做能省去你先切换到 server 分支，再对其执行变基命令的多个步骤。
+
+	$ git rebase master server
+	
+将 server 中的修改变基到 master 上:
+	
+![将 server 中的修改变基到 master 上][interesting-rebase-4]	
+
+然后就可以快进合并主分支 master 了：
+
+	$ git checkout master
+	$ git merge server
+
+至此，client 和 server 分支中的修改都已经整合到主分支里了，你可以删除这两个分支，最终提交历史会变成图中的样子：
+
+	$ git branch -d client
+	$ git branch -d server
+	
+最终的提交历史:
+	
+![最终的提交历史][interesting-rebase-5]	
+
+
 	
 [commit-and-tree]: /images/blog/ProGit/3/commit-and-tree.png
 [commits-and-parents]: /images/blog/ProGit/3/commits-and-parents.png
@@ -514,6 +587,12 @@ git fetch 更新你的远程仓库引用:
 [remote-branches-2]: /images/blog/ProGit/3/remote-branches-2.png
 [remote-branches-3]: /images/blog/ProGit/3/remote-branches-3.png
 [remote-branches-4]: /images/blog/ProGit/3/remote-branches-4.png
-[remote-branches-5]: /images/blog/ProGit/3/remote-branches-5.png
+[basic-rebase-3]: /images/blog/ProGit/3/basic-rebase-3.png
+[basic-rebase-4]: /images/blog/ProGit/3/basic-rebase-4.png
+[interesting-rebase-1]: /images/blog/ProGit/3/interesting-rebase-1.png
+[interesting-rebase-2]: /images/blog/ProGit/3/interesting-rebase-2.png
+[interesting-rebase-3]: /images/blog/ProGit/3/interesting-rebase-3.png
+[interesting-rebase-4]: /images/blog/ProGit/3/interesting-rebase-4.png
+[interesting-rebase-5]: /images/blog/ProGit/3/interesting-rebase-5.png
 
 
