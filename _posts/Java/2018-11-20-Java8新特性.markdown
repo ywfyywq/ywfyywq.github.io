@@ -1,0 +1,267 @@
+---
+layout: post
+title: Java 8 新特性
+date: 2018-11-20
+comments: true 
+tags: 学习笔记
+summary: 本文主要介绍Java的主要变化，如Lambda表达式、方法引用、流和默认方法等。通过本文，你将了解什么是行为的参数化，如何撰写Lambda表达式，什么使用流进行筛选、切片、查找、匹配、映射和归约等等。
+---
+### 行为参数化
+
+在Java 8 之前，如下的代码是很常见的。
+
+{% highlight java %}
+public class Apple {
+    private String color;
+    private Integer weight;
+
+    public Apple(int weight, String color) {
+        this.weight = weight;
+        this.color = color;
+    }
+    public String getColor() {
+        return color;
+    }
+    public void setColor(String color) {
+        this.color = color;
+    }
+    public Integer getWeight() {
+        return weight;
+    }
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        List<Apple> appleList = Arrays.asList(new Apple(80,"green"),
+                new Apple(155, "green"),
+                new Apple(120, "red"));
+
+        // 按重量排序
+        appleList.sort(new Comparator<Apple>() {
+            public int compare(Apple a1, Apple a2){
+                return a1.getWeight().compareTo(a2.getWeight());
+            }
+        });
+
+        // 按颜色排序
+        appleList.sort(new Comparator<Apple>() {
+            public int compare(Apple a1, Apple a2){
+                return a1.getColor().compareTo(a2.getColor());
+            }
+        });
+    }
+}
+{% endhighlight %}
+
+通过创建不同的Comparator匿名类，就可以实现对Apple的不同排序。此处，sort函数传递的是Comparator的一个实例对象。你会发现，每次创建匿名类的套路都是相似的（也是啰嗦的），都需要new Comparator<Apple>{.......这样千篇一律的开头。
+
+但通过观察我们发现，真正对我们有用的其实也就是a1.getWeight().compareTo(a2.getWeight())和a1.getColor().compareTo(a2.getColor())这两段代码，我们称之为行为代码，如果能把行为代码直接传递给函数，那就可以省很多功夫，代码也简洁了，在Java 8之前，是不支持的。在Java 8之后，以上代码可以通过以下的方式直接将行为参数化。
+
+{% highlight java %}
+public class Main2 {
+    public static void main(String[] args) {
+        List<Apple> appleList = Arrays.asList(new Apple(80,"green"),
+                new Apple(155, "green"),
+                new Apple(120, "red"));
+
+         // 按重量排序
+        appleList.sort((Apple a1, Apple a2) -> a1.getWeight().compareTo(a2.getWeight()));
+
+        // 按颜色排序
+        appleList.sort((Apple a1, Apple a2) -> a1.getColor().compareTo(a2.getColor()));
+    }
+}
+{% endhighlight %}
+
+在这里，行为的参数化，就是通过Lambda表达式实现的。
+
+### Lambda表达式
+
+可以把Lambda表达式理解为简洁地表示可传递的匿名函数的一种方式：它没有名称，但它有参数列表、函数主体、返回类型，可能还有一个可以抛出的异常列表。
+
+Lambda表达式由参数、箭头和主体组成，基本语法是 (parameters) -> expression，如图所示：
+
+![Lambda表达式语法格式][LambdaExpression]
+
+
+> 函数式接口定义：
+>
+> 函数式接口就是只定义一个抽象方法的接口，如Comparator和Runnable。
+
+Lambda表达式允许你直接以内联的形式为函数式接口的抽象方法提供实现，并把整个表达式作为函数式接口的实例。你用匿名内部类也可以完成同样的事情，只不过比较笨拙：需要提供一个实现，然后
+再直接内联将它实例化。下面的代码是有效的，因为Runnable是一个只定义了一个抽象方法run的函数式接口：
+
+{% highlight java %}
+
+Runnable r1 = () -> System.out.println("Hello World 1");
+Runnable r2 = new Runnable(){
+	public void run(){
+		System.out.println("Hello World 2");
+	}
+};
+
+public static void process(Runnable r){
+	r.run();
+}
+
+process(r1);
+process(r2);
+process(() -> System.out.println("Hello World 3"));
+
+{% endhighlight %}
+
+* Java 8中的常用函数式接口
+
+| 函数式接口 | 函数描述符 | 原始类型特化 |
+| ------ | ------ | ------ |
+| Predicate<T> | T->boolean | IntPredicate,LongPredicate,DoublePredicate |
+| Consumer<T> | T->void | IntConsumer,LongConsumer, DoubleConsumer |
+| Function<T,R> | T->R | IntFunction<R>,IntToDoubleFunction,IntToLongFunction,ToLongFunction<T> |
+| | | LongFunction<R>,LongToDoubleFunction,LongToIntFunction, |
+| | | DobleFunction<R>,ToIntFunction<T>,ToDoubleFunction<T>,ToLongFunction<T> |
+| Supplier<T> | ()->T | BooleanSupplier,IntSupplier,LongSupplier,DoubleSupplier |
+| UnaryOperator<T> | T->T | IntUnaryOperator, LongUnaryOperator, DoubleUnaryOperator |
+| BinaryOperator<T> | (T,T)->T | IntBinaryOperator,LongBinaryOperator,DoubleBinaryOperator |
+| BiPredicate<L,R> | (L,R)->boolean |  |
+| BiConsumer<T,U> | (T,U)->void | ObjIntConsumer<T>,ObjLongConsumer<T>,ObjDoubleConsumer<T> |
+| BiFunction<T,U,R> | (T,U)->R | ToIntBiFunction<T,U>,ToLongBiFunction<T,U>,ToDoubleBiFunction<T,U> |
+
+* Lambdas及函数式接口的例子
+
+| 使用案例 | Lambda的例子 | 对应的函数式接口 |
+| ------ | ------ | ------ |
+| 布尔表达式 | (List<String> list) -> list.isEmpty() | Predicate<List<String>> |
+| 创建对象 | () -> new Apple(10) | Supplier<Apple> |
+| 消费一个对象 | (Apple a) -> System.out.println(a.getWeight()) | Consumer<Apple> |
+| 从一个对象中选择/提取 | (String s) -> s.length() | Function<String, Integer>或ToIntFunction<String> |
+| 合并两个值 | (int a, int b) -> a * b | IntBinaryOperator |
+| 比较两个对象 | (Apple a1, Apple a2) -> a1.getWeight().compareTo(a2.getWeight()) | Comparator<Apple>或BiFunction<Apple, Apple,Integer>或ToIntBiFunction<Apple, Apple> |
+
+### 方法引用
+
+方法引用让你可以重复使用现有的方法定义，并像Lambda一样传递它们。
+
+先前： inventory.sort((Apple a1, Apple a2)-> a1.getWeight().compareTo(a2.getWeight()));
+
+之后（使用方法引用和java.util.Comparator.comparing）：inventory.sort(comparing(Apple::getWeight));
+
+* Lambda及其等效方法引用的例子
+
+| Lambda | 等效的方法引用 |
+| ------ | ------ |
+| (Apple a) -> a.getWeight() | Apple::getWeight |
+| () -> Thread.currentThread().dumpStack() | Thread.currentThread()::dumpStack |
+| (str, i) -> str.substring(i) | String::substring |
+| (String s) -> System.out.println(s) | System.out::println |
+
+方法引用主要有三类：
+1. 指向静态方法的方法引用（例如Integer的parseInt方法，写作Integer::parseInt）。
+2. 指向任意类型实例方法的方法引用（ 例如String 的length 方法， 写作String::length）。
+3. 指向现有对象的实例方法的方法引用（假设你有一个局部变量expensiveTransaction用于存放Transaction类型的对象，它支持实例方法getValue，那你就可以写expensive-
+Transaction::getValue）。
+
+构造函数引用:
+
+对于一个现有构造函数，你可以利用它的名称和关键字new来创建它的一个引用：ClassName::new。它的功能与指向静态方法的引用类似。
+
+### 流(Stream)
+
+流是Java API的新成员，它允许你以声明性方式处理数据集合（通过查询语句来表达，而不是临时编写一个实现）。
+
+流到底是什么呢？简短的定义就是“从支持数据处理操作的源生成的元素序列”。
+
+* 元素序列——就像集合一样，流也提供了一个接口，可以访问特定元素类型的一组有序值。因为集合是数据结构，所以它的主要目的是以特定的时间/空间复杂度存储和访问元素（如ArrayList 与 LinkedList）。集合讲的是数据，流讲的是计算。
+* 源——流会使用一个提供数据的源，如集合、数组或输入/输出资源。请注意，从有序集合生成流时会保留原有的顺序。由列表生成的流，其元素顺序与列表一致。
+* 数据处理操作——流的数据处理功能支持类似于数据库的操作，以及函数式编程语言中的常用操作，如filter、map、reduce、find、match、sort等。流操作可以顺序执行，也可并行执行。
+
+此外，流操作有两个重要的特点。
+
+* 流水线——很多流操作本身会返回一个流，这样多个操作就可以链接起来，形成一个大的流水线。
+* 内部迭代——与使用迭代器显式迭代的集合不同，流的迭代操作是在背后进行的。
+
+示例代码（从menu获得流——菜肴列表）：
+
+{% highlight java %}
+List<String> threeHighCaloricDishNames =
+	menu.stream()								// 建立操作流水线
+		.filter(d -> d.getCalories() > 300)		// 首先选出高热量的菜肴
+		.map(Dish::getName)						// 获取菜名
+		.limit(3)								// 只选择头三个
+		.collect(toList());						// 将结果保存在另一个List中
+System.out.println(threeHighCaloricDishNames);	// 打印结果
+{% endhighlight %}
+
+* filter——接受Lambda，从流中排除某些元素。
+* map——接受一个Lambda，将元素转换成其他形式或提取信息。
+* limit——截断流，使其元素不超过给定数量。
+* collect——将流转换为其他形式。
+
+### 流操作
+
+中间操作：诸如filter或sorted等中间操作会返回另一个流。这让多个操作可以连接起来形成一个查询。
+
+|操作 | 类型 | 返回类型 | 操作参数 | 函数描述符 |
+| ------ | ------ | ------ | ------ | ------ |
+| filter | 中间 | Stream<T> | Predicate<T> | T -> boolean |
+|map | 中间 | Stream<R> | Function<T, R> | T -> R |
+|limit | 中间 | Stream<T> | | |
+|sorted | 中间 | Stream<T> | Comparator<T> | (T, T) -> int |
+|distinct | 中间 | Stream<T> | | |
+
+
+终端操作：终端操作会从流的流水线生成结果。其结果是任何不是流的值，比如List、Integer，甚至void。
+
+|操 作 | 类 型 | 目 的 |
+| ------ | ------ | ------ |
+|forEach | 终端 | 消费流中的每个元素并对其应用Lambda。这一操作返回void |
+|count | 终端 | 返回流中元素的个数。这一操作返回long |
+|collect | 终端 | 把流归约成一个集合，比如List、Map 甚至是Integer。 |
+
+
+### 使用流
+
+筛选和切片: filter、distinct、limit、skip
+
+映射：map、flatMap
+
+查找和匹配：allMatch、anyMatch、noneMatch、findFirst和findAny
+
+归约：reduce
+
+你可以像下面这样对流中所有的元素求和：
+
+{% highlight java %}
+int sum = numbers.stream().reduce(0, (a, b) -> a + b);
+{% endhighlight %}
+
+无初始值
+reduce还有一个重载的变体，它不接受初始值，但是会返回一个Optional对象：
+
+{% highlight java %}
+Optional<Integer> sum = numbers.stream().reduce((a, b) -> (a + b));
+{% endhighlight %}
+
+### 用流收集数据
+
+归约和汇总：
+
+1. 最大最小值：Collectors.maxBy和Collectors.minBy，
+2. 汇总：Collectors.summingInt
+3. 连接字符串：joining
+
+分组：Collectors.groupingBy
+
+分区：partitioningBy
+
+### 默认方法
+
+
+
+
+
+
+[LambdaExpression]: /images/blog/Java8/LambdaExpression.png
+
