@@ -258,8 +258,76 @@ Optional<Integer> sum = numbers.stream().reduce((a, b) -> (a + b));
 
 ### 默认方法
 
+默认方法由default修饰符修饰，并像类中声明的其他方法一样包含方法体。
+
+如果一个类使用相同的函数签名从多个地方（比如另一个类或接口）继承了方法，通过三条规则可以进行判断。
+(1) 类中的方法优先级最高。类或父类中声明的方法的优先级高于任何声明为默认方法的优先级。
+(2) 如果无法依据第一条进行判断，那么子接口的优先级更高：函数签名相同时，优先选择拥有最具体实现的默认方法的接口，即如果B继承了A，那么B就比A更加具体。
+(3) 最后，如果还是无法判断，继承了多个接口的类必须通过显式覆盖和调用期望的方法，显式地选择使用哪一个默认方法的实现。
+
+### 用Optional取代null
+
+null 带来的种种问题
+
+1. 它是错误之源。NullPointerException是目前Java程序开发中最典型的异常。
+2. 它会使你的代码膨胀。它让你的代码充斥着深度嵌套的null检查，代码的可读性糟糕透顶。
+3. 它自身是毫无意义的。null自身没有任何的语义，尤其是，它代表的是在静态类型语言中以一种错误的方式对缺失变量值的建模。
+4. 它破坏了Java的哲学。Java一直试图避免让程序员意识到指针的存在，唯一的例外是：null指针。
+5. 它在Java的类型系统上开了个口子。null并不属于任何类型，这意味着它可以被赋值给任意引用类型的变量。这会导致问题，原因是当这个变量被传递到系统中的另一个部分后，你将无法获知这个null变量最初的赋值到底是什么类型。
+
+创建Optional 对象
+
+1. 声明一个空的Optional: Optional<Car> optCar = Optional.empty();
+2. 依据一个非空值创建Optional：Optional<Car> optCar = Optional.of(car);
+3. 可接受null的Optional：Optional<Car> optCar = Optional.ofNullable(car);
+
+使用map 从Optional 对象中提取和转换值
+
+{% highlight java %}
+Optional<Insurance> optInsurance = Optional.ofNullable(insurance);
+Optional<String> name = optInsurance.map(Insurance::getName);
+{% endhighlight %}
+
+使用flatMap 链接Optional 对象
+
+{% highlight java %}
+public String getCarInsuranceName(Optional<Person> person) {
+	return person.flatMap(Person::getCar)
+		.flatMap(Car::getInsurance)
+		.map(Insurance::getName)
+		.orElse("Unknown");
+}
+{% endhighlight %}
+
+默认行为及解引用Optional 对象
+
+1. get()是这些方法中最简单但又最不安全的方法。如果变量存在，它直接返回封装的变量值，否则就抛出一个NoSuchElementException异常。所以，除你非常确定Optional变量一定包含值，否则使用这个方法是个相当糟糕的主意。此外，这种方式即便相对于嵌套式的null检查，也并未体现出多大的改进。
+2. orElse(T other)是我们在代码清单10-5中使用的方法，正如之前提到的，它允许你在
+Optional对象不包含值时提供一个默认值。
+3. orElseGet(Supplier<? extends T> other)是orElse方法的延迟调用版，Supplier
+方法只有在Optional对象不含值时才执行调用。如果创建默认值是件耗时费力的工作，
+你应该考虑采用这种方式（借此提升程序的性能），或者你需要非常确定某个方法仅在
+Optional为空时才进行调用，也可以考虑该方式（这种情况有严格的限制条件）。
+4. orElseThrow(Supplier<? extends X> exceptionSupplier)和get方法非常类似，
+它们遭遇Optional对象为空时都会抛出一个异常，但是使用orElseThrow你可以定制希
+望抛出的异常类型。
+5. ifPresent(Consumer<? super T>)让你能在变量值存在时执行一个作为参数传入的
+方法，否则就不进行任何操作。
+
+Optional类的方法总结
 
 
+|方 法 | 描 述 |
+| ------ | ------ |
+|flatMap | 如果值存在，就对该值执行提供的mapping 函数调用，返回一个Optional 类型的值，否则就返回一个空的Optional 对象|
+|get | 如果该值存在，将该值用Optional 封装返回，否则抛出一个NoSuchElementException 异常|
+|ifPresent | 如果值存在，就执行使用该值的方法调用，否则什么也不做 |
+|isPresent | 如果值存在就返回true，否则返回false |
+|map | 如果值存在，就对该值执行提供的mapping 函数调用 of 将指定值用Optional封装之后返回，如果该值为null，则抛出一个NullPointerException异常|
+|ofNullable | 将指定值用Optional 封装之后返回，如果该值为null，则返回一个空的Optional 对象|
+|orElse | 如果有值则将其返回，否则返回一个默认值|
+|orElseGet | 如果有值则将其返回，否则返回一个由指定的Supplier 接口生成的值|
+|orElseThrow | 如果有值则将其返回，否则抛出一个由指定的Supplier 接口生成的异常|
 
 
 
