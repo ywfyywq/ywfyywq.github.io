@@ -199,7 +199,7 @@ System.out.println(threeHighCaloricDishNames);	// 打印结果
 * limit——截断流，使其元素不超过给定数量。
 * collect——将流转换为其他形式。
 
-### 流操作
+* 流操作
 
 中间操作：诸如filter或sorted等中间操作会返回另一个流。这让多个操作可以连接起来形成一个查询。
 
@@ -221,7 +221,7 @@ System.out.println(threeHighCaloricDishNames);	// 打印结果
 |collect | 终端 | 把流归约成一个集合，比如List、Map 甚至是Integer。 |
 
 
-### 使用流
+* 使用流
 
 筛选和切片: filter、distinct、limit、skip
 
@@ -244,7 +244,7 @@ reduce还有一个重载的变体，它不接受初始值，但是会返回一�
 Optional<Integer> sum = numbers.stream().reduce((a, b) -> (a + b));
 {% endhighlight %}
 
-### 用流收集数据
+* 用流收集数据
 
 归约和汇总：
 
@@ -329,7 +329,146 @@ Optional类的方法总结
 |orElseGet | 如果有值则将其返回，否则返回一个由指定的Supplier 接口生成的值|
 |orElseThrow | 如果有值则将其返回，否则抛出一个由指定的Supplier 接口生成的异常|
 
+### 新的日期和时间API
 
+1. LocalDate： 日期
+{% highlight java %}
+LocalDate date = LocalDate.of(2014, 3, 18);
+int year = date.getYear();
+Month month = date.getMonth();
+int day = date.getDayOfMonth();
+DayOfWeek dow = date.getDayOfWeek();
+int len = date.lengthOfMonth();
+boolean leap = date.isLeapYear();
+{% endhighlight %}
+
+2. LocalTime： 时间
+{% highlight java %}
+LocalTime time = LocalTime.of(13, 45, 20);
+int hour = time.getHour();
+int minute = time.getMinute();
+int second = time.getSecond();
+{% endhighlight %}
+
+3. LocalDateTime： 日期时间
+{% highlight java %}
+LocalDateTime dt1 = LocalDateTime.of(2014, Month.MARCH, 18, 13, 45, 20);
+LocalDateTime dt2 = LocalDateTime.of(date, time);
+LocalDateTime dt3 = date.atTime(13, 45, 20);
+LocalDateTime dt4 = date.atTime(time);
+LocalDateTime dt5 = time.atDate(date);
+{% endhighlight %}
+
+3. Instant：以Unix元年时间（传统的设定为UTC时区1970年1月1日午夜时分）开始所经历的秒数进行计算。
+{% highlight java %}
+Instant.ofEpochSecond(3);
+Instant.ofEpochSecond(3, 0);
+Instant.ofEpochSecond(2, 1_000_000_000);	// 2 秒之后再加上100万纳秒（1秒）
+Instant.ofEpochSecond(4, -1_000_000_000);	// 4秒之前的100万纳秒（1秒）
+{% endhighlight %}
+
+4. Duration：用于以秒和纳秒衡量时间的长短
+{% highlight java %}
+Duration d1 = Duration.between(time1, time2);
+Duration d1 = Duration.between(dateTime1, dateTime2);
+Duration d2 = Duration.between(instant1, instant2);
+
+Duration threeMinutes = Duration.ofMinutes(3);
+Duration threeMinutes = Duration.of(3, ChronoUnit.MINUTES);
+{% endhighlight %}
+
+5. Period：以年、月或者日的方式对多个时间单位建模
+{% highlight java %}
+Period tenDays = Period.ofDays(10);
+Period threeWeeks = Period.ofWeeks(3);
+Period twoYearsSixMonthsOneDay = Period.of(2, 6, 1);
+{% endhighlight %}
+
+日期时间类中表示时间间隔的通用方法：
+
+|方 法 名 | 是否是静态方法 | 方法描述|
+| ------ | ------ | ------ |
+|between | 是 | 创建两个时间点之间的interval|
+|from | 是 | 由一个临时时间点创建interval|
+|of | 是 | 由它的组成部分创建interval 的实例|
+|parse | 是 | 由字符串创建interval 的实例|
+|addTo | 否 | 创建该interval 的副本，并将其叠加到某个指定的temporal 对象|
+|get | 否 | 读取该interval 的状态|
+|isNegative | 否 | 检查该interval 是否为负值，不包含零|
+|isZero | 否 | 检查该interval 的时长是否为零|
+|minus | 否 | 通过减去一定的时间创建该interval 的副本|
+|multipliedBy | 否 | 将interval 的值乘以某个标量创建该interval 的副本|
+|negated | 否 | 以忽略某个时长的方式创建该interval 的副本|
+|plus | 否 | 以增加某个指定的时长的方式创建该interval 的副本|
+|subtractFrom | 否 | 从指定的temporal 对象中减去该interval|
+
+* 操纵、解析和格式化日期
+
+{% highlight java %}
+LocalDate date1 = LocalDate.of(2014, 3, 18); // 2014-03-18
+LocalDate date2 = date1.withYear(2011);		// 2011-03-18
+LocalDate date3 = date2.withDayOfMonth(25);	// 2011-03-25
+LocalDate date4 = date3.with(ChronoField.MONTH_OF_YEAR, 9);	// 2011-09-25
+
+LocalDate date5 = LocalDate.of(2014, 3, 18);	// 2014-03-18
+LocalDate date6 = date1.plusWeeks(1);	// 2014-03-25
+LocalDate date7 = date2.minusYears(3);	// 2011-03-25
+LocalDate date8 = date3.plus(6, ChronoUnit.MONTHS);	// 2011-09-25
+{% endhighlight %}
+
+有的时候，你需要进行一些更加复杂的操作，比如，将日期调整到下个周日、下个工作日，或者是本月的最后一天。这时，你可以使用重载版本的with方法，向其传递一个提供了更多定制化选择的TemporalAdjuster对象，更加灵活地处理日期。
+
+{% highlight java %}
+import static java.time.temporal.TemporalAdjusters.*;
+
+LocalDate date1 = LocalDate.of(2014, 3, 18);	// 2014-03-18
+LocalDate date2 = date1.with(nextOrSame(DayOfWeek.SUNDAY)); // 2014-03-23
+LocalDate date3 = date2.with(lastDayOfMonth());	// 2014-03-31
+{% endhighlight %}
+
+TemporalAdjuster类中的工厂方法：
+
+| 方 法 名 | 描 述 |
+|dayOfWeekInMonth | 创建一个新的日期，它的值为同一个月中每一周的第几天|
+|firstDayOfMonth | 创建一个新的日期，它的值为当月的第一天|
+|firstDayOfNextMonth | 创建一个新的日期，它的值为下月的第一天|
+|firstDayOfNextYear | 创建一个新的日期，它的值为明年的第一天|
+|firstDayOfYear | 创建一个新的日期，它的值为当年的第一天|
+|firstInMonth | 创建一个新的日期，它的值为同一个月中，第一个符合星期几要求的值|
+|lastDayOfMonth | 创建一个新的日期，它的值为当月的最后一天|
+|lastDayOfNextMonth | 创建一个新的日期，它的值为下月的最后一天|
+|lastDayOfNextYear | 创建一个新的日期，它的值为明年的最后一天|
+|lastDayOfYear | 创建一个新的日期，它的值为今年的最后一天|
+|lastInMonth | 创建一个新的日期，它的值为同一个月中，最后一个符合星期几要求的值|
+|next/previous | 创建一个新的日期，并将其值设定为日期调整后或者调整前，第一个符合指定星期几要求的日期|
+|nextOrSame/previousOrSame | 创建一个新的日期，并将其值设定为日期调整后或者调整前，第一个符合指定星期几要求的日期，如果该日期已经符合要求，直接返回该对象|
+
+* 打印输出及解析日期时间对象
+
+{% highlight java %}
+LocalDate date = LocalDate.of(2014, 3, 18);
+String s1 = date.format(DateTimeFormatter.BASIC_ISO_DATE);
+String s2 = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+
+LocalDate date1 = LocalDate.parse("20140318",DateTimeFormatter.BASIC_ISO_DATE);
+LocalDate date2 = LocalDate.parse("2014-03-18",DateTimeFormatter.ISO_LOCAL_DATE);
+
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+LocalDate date1 = LocalDate.of(2014, 3, 18);
+String formattedDate = date1.format(formatter);
+LocalDate date2 = LocalDate.parse(formattedDate, formatter);
+{% endhighlight %}
+
+* 处理不同的时区和历法
+
+{% highlight java %}
+ZoneId romeZone = ZoneId.of("Europe/Rome");
+LocalDate date = LocalDate.of(2014, Month.MARCH, 18);
+ZonedDateTime zdt1 = date.atStartOfDay(romeZone);
+LocalDateTime dateTime = LocalDateTime.of(2014, Month.MARCH, 18, 13, 45);
+ZonedDateTime zdt2 = dateTime.atZone(romeZone);
+Instant instant = Instant.now();
+ZonedDateTime zdt3 = instant.atZone(romeZone);
+{% endhighlight %}
 
 [LambdaExpression]: /images/blog/Java8/LambdaExpression.png
-
