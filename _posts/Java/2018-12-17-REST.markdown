@@ -1,0 +1,24 @@
+---
+layout: post
+title: REST实战
+date: 2018-11-20
+comments: true 
+tags: 学习笔记
+summary: 揭开WEB作为一个应用平台的神秘面纱，以及展示如何将WEB架构应用于常见的企业计算问题。帮助大家建造一个可以由其它系统使用的开放的信息平台，它避开集成，而支持组合，但仍然实现了有价值的业务行为。这是一个分布式的、超媒体驱动的应用平台。
+---
+### 将Web作为建造分布式系统的平台
+
+* 从资源的角度思考
+
+要使用一个资源，我们需要能够在网络上标识它，还需要有一些手段来操作它。标识资源的就被称作标识符。
+
+Web上用来称呼标识符的术语：
+
+| 术语 | 注释 |
+| ------ | ------ | ------ |
+| URI(Uniform Resource Identifier | 常被误认为Universal或者Unique |
+| IRI(International Resource Identifier | URI的升级版，允许使用国际字符方案 |
+| URN(Uniform Resource Name | 这是一个URI，使用"urn"作为方案，用来在一个特殊的"命名空间"中表达唯一的名字 |
+| URL(Uniform Resource Locator | 这是一个URI，用来表示关于与所标识的资源交互的方式的信息。这个术语现在已经过时了，因为并非所有的URI都需要表达特定的交互协议的信息 |
+| 地址 | 很多人认为资源在WEB上有地址，作为结果，说的其实就是资源的标识符 |
+
