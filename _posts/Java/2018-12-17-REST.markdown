@@ -62,3 +62,107 @@ HTTP所支持的动词的集合——GET、POST、PUT、DELETE、OPTIONS、HEAD�
 
 三级服务：最Web感知的服务级别，支持超媒体作为应用状态的引擎的观念。即，表述包含了消费者可能感兴趣的到其他资源的URI链接。这种服务通过追踪资源来引导消费者，结果是引起应用状态的迁移。
 
+
+### Restbucks：一家有着全球抱负的小咖啡店
+
+![HTTP远程过程调用的架构][SimpleHTTPArchitecture]
+
+[SimpleHTTPArchitecture]: /images/blog/REST/SimpleHTTPArchitecture.png
+
+* URI模板
+
+在分布式系统中，服务提供者经常会提供机器可以阅读的元数据，描述客户应该如何与服务进行绑定和交互，例如，一般会用到接口定义语言(IDL)，例如WS-*Web服务中的Web服务描述语言（WSDL），实现CORBA系统时则是使用CORBA-IDL。对于WEB来说，会使用各种各样的元数据技术来描述服务契约，包括URI模板，它描述一个服务所支持的那组URI的句法模式。
+
+例如：http://restbucks.com/order/{order_id}
+
+* URI隧道技术
+
+URI隧道技术是将URI作为跨越系统边界转移信息的一种方式来使用，其做法是将信息编码到URI内部。
+
+将方法调用映射到URI：
+
+![将方法调用映射到URI][URIMapping]
+
+[URIMapping]: /images/blog/REST/URIMapping.png
+
+URI隧道技术的HTTP请求/响应:
+
+![URI隧道技术的HTTP请求/响应][ResponseForURITunnel]
+
+[ResponseForURITunnel]: /images/blog/REST/ResponseForURITunnel.png
+
+从URI中提取业务对象：
+
+{% highlight cs %}
+public void ProcessPost(HttpListenerContext context)
+{
+	// Parse the URI
+	Order order = ParseUriForOrderDetails(context.Request.QueryString);
+	string response = string.Empty;
+	if (order != null)
+	{
+		// Process the order by calling the mapped method
+		var orderConfirmation = RestbucksService.PlaceOrder(order);
+		response = "OrderId=" + orderConfirmation.OrderId.ToString();
+	}
+	else
+	{
+		response = ″Failure: Could not place order.″;
+	}
+	// Write to the response stream
+	using (var sw = new StreamWriter(context.Response.OutputStream))
+	{
+		sw.Write(response);
+	}
+}
+{% endhighlight %}
+
+
+URI技术的客户端：
+
+{% highlight cs %}
+public OrderConfirmation PlaceOrder(Order order)
+{
+	// Create the URI
+	var sb = new StringBuilder(″http://restbucks.com/PlaceOrder?″);
+	sb.AppendFormat(″coffee={0}″, order.Coffee.ToString());
+	sb.AppendFormat(″&size={0}″, order.Size.ToString());
+	sb.AppendFormat(″&milk={0}″, order.Milk.ToString());
+	sb.AppendFormat(″&location={0}″, order.ConsumeLocation.ToString());
+	// Set up the POST request
+	var request = HttpRequest.Create(sb.ToString()) as HttpWebRequest;
+	request.Method = ″POST″;
+	// Send the POST request
+	var response = request.GetResponse();
+	// Read the contents of the response
+	OrderConfirmation orderConfirmation = null;
+	using (var sr = new StreamReader(response.GetResponseStream()))
+	{
+		var str = sr.ReadToEnd();
+		// Create an OrderConfirmation object from the response
+		orderConfirmation = new OrderConfirmation(str);
+	}
+	return orderConfirmation;
+}
+{% endhighlight %}
+
+使用URI隧道技术的服务在Richardson成熟度模型中被划分为一级服务。这类服务中URI是一个关键的概念，但是却不授受任何其他的WEB技术。HTTP也只被用作在WEB中移动URI的传输协议。
+
+* POX：基于HTTP之上的普通老式XML
+
+URI隧道技术使用地址来传递业务意图，第二种基于WEB的轻量级集成方法使用消息进行传递，如普通老式XML（Plain Old XML）, POX。
+
+用XML和HTTP进行远程过程调用：
+
+![用XML和HTTP进行远程过程调用][POXInteraction]
+
+[POXInteraction]: /images/blog/REST/POXInteraction.png
+
+1. POX调用始于客户系统中的一个对象调用一个分发器，该分发器为远程Restbucks服务展现一个本地接口。
+2. 分发器将它从应用级对象所接受到的值转换成一个XML文档，然后调用一个HTTP客户端库来将信息传递到网络上。
+3. HTTP客户端将分发器的XML载荷POST到远程服务。
+4. 包含订购服务的WEB服务器接受进来的POST请求，并将请求的内容传给服务器端 的分发器。
+5. 服务器端的分发器将XML文档翻译成Restbucks服务中的某个对象上的一个本地方法调用。
+6. 当这个方法调用返回时，任何返回值都会被传给分发器。
+7. 分发器使用返回值创建一个XML文档，并将它传回WEB服务器。
+8. 
