@@ -15,7 +15,7 @@ summary: 揭开WEB作为一个应用平台的神秘面纱，以及展示如何�
 Web上用来称呼标识符的术语：
 
 | 术语 | 注释 |
-| ------ | ------ | ------ |
+| ------ | ------ |
 | URI(Uniform Resource Identifier | 常被误认为Universal或者Unique |
 | IRI(International Resource Identifier | URI的升级版，允许使用国际字符方案 |
 | URN(Uniform Resource Name | 这是一个URI，使用"urn"作为方案，用来在一个特殊的"命名空间"中表达唯一的名字 |
@@ -165,4 +165,249 @@ URI隧道技术使用地址来传递业务意图，第二种基于WEB的轻量�
 5. 服务器端的分发器将XML文档翻译成Restbucks服务中的某个对象上的一个本地方法调用。
 6. 当这个方法调用返回时，任何返回值都会被传给分发器。
 7. 分发器使用返回值创建一个XML文档，并将它传回WEB服务器。
-8. 
+8. Web服务器产生一个HTTP响应（习惯上使用一个200状态代码），用来自分发器的XML文档作为消息体，使用与用于初始请求相同的HTTP连接来发送响应。
+9. 消费者系统中的HTTP客户端收到响应，并且使客户端的分发器可以访问XML载荷。
+10. 客户端的分发器从XML响应中提取值作为返回值，将它返回给初始调用对象，完成远程调用。
+
+* XML-RPC
+
+XML-RPC的前提是用XML作为通用的中间格式，在各种不同的系统中支持简单的远程过程调用。因此，XML-RPC被归入POX，因为它是使用HTTP POST和XML进行远程调用的。XML-RPC尝试对在HTTP请求和响应的载荷中表示这类信息的方法进行标准化，使不同的应用都不必发明自己的格式和实现到类型系统的映射。
+
+POX服务在Richardson的成熟度模型中排在零级。零级服务使用HTTP作为传输协议，并使用单个URI作为对外公布的用来交换XML消息的端点。
+
+### CRUD式Web服务
+
+将Order建模为资源
+
+1. 在顾客购买时创建订单
+2. 订单会被频繁地读取，特别是在询问其准备状态时
+3. 在某些情况下，还可以更新订单（例如，当顾客改变主意，或者要在饮料中添加特殊风味的时候）
+4. 最后，如果某笔订单仍然处于待处理状态，允许顾客取消（或删除）订单
+
+一笔订单的各种可能的状态：
+
+![一笔订单的各种可能的状态][OrderState]
+
+[OrderState]: /images/blog/REST/OrderState.png
+
+CRUD订购服务的高级架构（用POST创建订单，用GET获取订单，用PUT更新订单，用DELETE删除订单）：
+
+![CRUD订购服务的高级架构：][OrderingServiceArch]
+
+[OrderingServiceArch]: /images/blog/REST/OrderingServiceArch.png
+
+由于CRUD同时使用了HTTP和URI，它们被认为是处于Richardson成熟度模型的第二级。
+
+* 建造CRUD式服务
+
+订购服务中的契约概览：
+
+| 动词 | URI或模板 | 用途 |
+| ------ | ------ | ------ |
+| POST | /order | 创建一个新订单，成功之后收到一个Location头信息，说明新订单的URI |
+| GET | /order/{orderId} | 请求该URI所对应的订单的当前状态 |
+| PUT | /order/{orderId} | 更新该URI所对应的订单，提供完整的表述 |
+| DELETE | /order/{orderId} | 从逻辑上删除该URI所对应的订单 |
+
+* 通过POST请求创建一笔咖啡订单
+
+{% highlight xml %}
+
+POST /order HTTP/1.1
+Host: restbucks.com
+Content-Type: application/xml
+Content-Length: 239
+
+<order xmlns=″http://schemas.restbucks.com/order″>
+	<location>takeAway</location>
+	<items>
+		<item>
+			<name>latte</name>
+			<quantity>1</quantity>
+			<milk>whole</milk>
+			<size>small</size>
+		</item>
+	</items>
+</order>
+
+{% endhighlight %}
+
+* 订单创建成功后的响应
+
+{% highlight xml %}
+
+HTTP/1.1 201 Created
+Content-Length: 267
+Content-Type: application/xml
+Date: Wed, 19 Nov 2008 21:45:03 GMT
+Location: http://restbucks.com/order/1234
+
+<order xmlns=″http://schemas.restbucks.com/order″>
+	<location>takeAway</location>
+	<items>
+		<item>
+			<name>latte</name>
+			<quantity>1</quantity>
+			<milk>whole</milk>
+			<size>small</size>
+		</item>
+	</items>
+	<status>pending</status>
+</order>
+
+{% endhighlight %}
+
+如果POST请求成功了，服务器会创建一个订单资源。随后，它用201 Created状态代码生成一个HTTP响应，用一个Location头信息包含新建订单的URI，并在响应消息体中包含对新订单状态的确认。
+
+* 通过GET请求订单
+
+{% highlight xml %}
+
+GET /order/1234 HTTP/1.1
+Host: restbucks.com
+
+{% endhighlight %}
+
+* 用GET读取订单
+
+{% highlight xml %}
+
+HTTP/1.1 200 OK
+Content-Length: 241
+Content-Type: application/xml
+Date: Wed, 19 Nov 2008 21:48:10 GMT
+
+<order xmlns=″http://schemas.restbucks.com/order″>
+	<location>takeAway</location>
+	<items>
+		<item>
+			<name>latte</name>
+			<quantity>1</quantity>
+			<milk>whole</milk>
+			<size>small</size>
+		</item>
+	</items>
+</order>
+
+{% endhighlight %}
+
+* 更新订单
+
+{% highlight xml %}
+
+PUT /order/1234 HTTP/1.1
+Host: restbucks.com
+Content-Type: application/xml
+Content-Length: 246
+
+<order xmlns=″http://schemas.restbucks.com/order″>
+	<location>takeAway</location>
+	<items>
+		<item>
+			<milk>skim</milk>
+			<name>cappuccino</name>
+			<quantity>1</quantity>
+			<size>large</size>
+		</item>
+	</items>
+</order>
+
+{% endhighlight %}
+
+PUT请求期望能将整个资源表述都提供给服务器，而不是只提供资源状态的变化量。另一个相对不太常用的HTTP动词，PATCH，建议在某些情况下使用（如涉及到大量的资源表述），通常只提供变化量。
+
+当服务器接受并处理PUT请求时，消费者就会收到一个200 OK响应，或者204 No Centent响应。
+
+如果使用PUT请求发送对资源的更新，但是服务并不支持此次更新，我们可以合理地预测，此时使用405 Method Not Allowed或者409 Conflict作为响应代码都是不错的选择。
+
+* 用DELETE删除资源
+
+{% highlight xml %}
+
+DELETE /order/1234 HTTP/1.1
+Host: restbucks.com
+
+{% endhighlight %}
+
+客户端指定了一个服务器无法映射到订单的URI，导致订购服务产生了一个404 Not Found响应。
+
+* 安全性和幂等性
+
+GET：既安全又幂等
+
+PUT和DELETE：幂等，但不安全
+
+POST：既不安全也不幂等
+
+* 校正资源状态
+
+在分布式应用中，经常会出现多个消费者与同一个资源交互的情况，每一位消费者都不理会其他人所做修改。除了这些由消费者驱动的变化，内部的服务行为也会导致资源状态发生消费者所不知道的变化。
+
+HTTP提供了一种简单但强大的机制，可以按照实体标签(entity tag)与条件请求头信息(conditional request header)的形式，对所期待的资源状态进行校正（并防止产生竞争）。
+
+包含ETAG的更新请求：
+
+{% highlight xml %}
+
+PUT /order/1234 HTTP/1.1
+Host: restbucks.com
+If-Match: ″72232bd0daafa12f7e2d1561c81cd082″
+
+<order xmlns=″http://schemas.restbucks.com/order″>
+	<location>takeAway</location>
+	<items>
+		<item>
+			<milk>whole</milk>
+			<name>cappuccino</name>
+			<quantity>1</quantity>
+			<size>large</size>
+		</item>
+	</items>
+	<status>pending</preparing>
+</order>
+
+{% endhighlight %}
+
+ETAG条件失败：
+
+{% highlight xml %}
+
+HTTP/1.1 412 Precondition Failed
+
+{% endhighlight %}
+
+### 超媒体服务
+
+* 将超媒体作为应用状态的引擎
+
+“将超媒体作为应用状态的引擎（Hypermedia As The Engine Of Application State）”一词，有时会缩写为“HATEOAS”，用来描述REST架构风格的核心原则。简单地说，这个原则说的是：超媒体转换了应用的状态。
+
+资源的当前状态由以下几项共同组成：
+
+1. 属于该资源的信息项（information item）的值
+2. 相关资源的链接
+3. 表示迁移到当前资源的未来某种可能状态的链接
+4. 对于将该资源与其他本地资源相关联的任何业务规则的求值结果
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
