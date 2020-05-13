@@ -1,6 +1,3 @@
-@import url('font-awesome.css');  
-@import url('animate.css');
-
 body {
 	font-family:'Open Sans', Arial, sans-serif;
 	font-weight:300;
@@ -783,14 +780,6 @@ form#commentform textarea {
 
 .about-text-2 p {
 	margin-bottom: 20px;
-}
-
-#call-to-action {
-	background: url(../images/bg/about.jpg) no-repeat;
-	background-attachment: fixed;
-	background-position: top center;
-	padding: 100px 0;
-	color: #fff;
 }
 
 .call-to-action h3 {
